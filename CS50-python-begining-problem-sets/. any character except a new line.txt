@@ -20,3 +20,12 @@ A|B either A or B
 
 re.search(pattern, string, flags=0)
 flags are re.IGNORECASE, re.MULTILINE, re.DOTALL
+
+A|B either A or B
+(...) a group 
+(?:...) non-capturing version
+
+:= assign a value and at the same time ask a Boolean question abt it.
+
+
+
