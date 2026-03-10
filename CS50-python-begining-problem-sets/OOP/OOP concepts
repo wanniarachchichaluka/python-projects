@@ -1,0 +1,256 @@
+PYTHON OOP LEARNING DOCUMENTATION
+Date: March 10, 2026
+
+TABLE OF CONTENTS
+1. Basic Class Structure
+2. Constructors (__init__)
+3. Instance Methods
+4. Properties (Getters/Setters)
+5. Class Methods
+6. Static Methods
+7. Inheritance
+8. OOP Core Concepts
+9. Special Methods (Dunder Methods)
+10. Complete Reference Example
+
+===============================================================================
+SECTION 1: BASIC CLASS STRUCTURE
+===============================================================================
+Version 1: Empty Class
+
+class Student:
+    ...
+
+def main():
+    student = get_student()
+    print(f'{student.name} from {student.house}')
+
+def get_student():
+    student = Student()
+    student.name = input("Name: ")
+    student.house = input("House: ")
+    return student
+
+if __name__ == "__main__":
+    main()
+
+Key Points:
+- class Student: Creates a blueprint/template.
+- ... : Placeholder (ellipsis) for empty class.
+- student = Student(): Instantiates an object.
+- Attributes added dynamically: student.name, student.house.
+
+Why This Structure?
+- Creates custom data type grouping related data.
+- Alternative to using separate variables or dictionaries.
+- Provides reusability.
+
+Problems with This Approach:
+- Data setup is scattered.
+- No guarantee all students have same attributes.
+- Can accidentally forget to set attributes.
+
+===============================================================================
+SECTION 2: CONSTRUCTORS (__init__ METHOD)
+===============================================================================
+Version 2: Adding Constructor
+
+class Student:
+    def __init__(self, name, house=None):
+        self.name = name
+        self.house = house
+
+What is __init__?
+- Special method (constructor) automatically called when creating object.
+- 'self' parameter refers to the instance being created.
+- Parameters define required/optional data for object creation (e.g., house=None).
+
+
+
+Key Changes from Version 1:
+- Encapsulation: Data setup happens in ONE place (init).
+- Atomic creation: Student(name, house) ensures object is created with data.
+
+Warning:
+Adding random attributes like 'student.father = input()' outside the class
+creates "hidden" properties and breaks class template consistency.
+
+===============================================================================
+SECTION 3: INSTANCE METHODS
+===============================================================================
+Version 3: Adding Behavior with Methods
+
+class Student:
+    def __init__(self, name, house, patronus=None):
+        self.name = name
+        self.house = house
+        self.patronus = patronus
+
+    def charm(self):
+        match self.patronus:
+            case "Stag": return "🤣"
+            case "Otter": return "😒"
+            case _: return "🤩"
+
+What are Instance Methods?
+- Functions defined inside a class.
+- First parameter is always 'self'.
+- Operate on specific object instances using internal data (self.patronus).
+
+Why Add Methods?
+- Logic Encapsulation: Object knows its own behavior.
+- Clean Code: main() just asks, doesn't figure out "how".
+
+===============================================================================
+SECTION 4: PROPERTIES (GETTERS & SETTERS)
+===============================================================================
+Version 4: Adding Encapsulation with Properties
+
+@property
+def house(self):
+    return self._house
+
+@house.setter
+def house(self, house):
+    self._house = house
+
+Why Use Getters/Setters? (The REAL Reasons)
+1. Validation (The "Bouncer"):
+   Check if house is valid before saving it to self._house.
+2. Abstraction:
+   Change internal storage (e.g., splitting Name into First/Last) without 
+   changing how the user accesses .name.
+3. Read-Only Attributes:
+   Provide a @property but NO setter.
+
+
+
+===============================================================================
+SECTION 5: CLASS METHODS
+===============================================================================
+Version 5: Factory Method Pattern
+
+@classmethod
+def get(cls):
+    name = input("Name: ")
+    house = input("House: ")
+    return cls(name, house)
+
+What are Class Methods?
+- Decorated with @classmethod.
+- First parameter is 'cls' (the class), not 'self'.
+- The "Chicken and Egg" Solution: Allows calling Student.get() BEFORE an 
+  object exists. It acts as a "Front Desk" or "Factory" for creation.
+
+
+
+===============================================================================
+SECTION 6: STATIC METHODS
+===============================================================================
+@staticmethod
+def is_valid_name(name):
+    return len(name) > 1
+
+Comparison:
+- @classmethod: Gets 'cls'. Can create objects (return cls()).
+- @staticmethod: Gets nothing. Used for utility functions related to the class.
+
+===============================================================================
+SECTION 7: INHERITANCE
+===============================================================================
+Version 6: Parent and Child Classes
+
+class Wizard:
+    def __init__(self, name):
+        self.name = name
+
+class Student(Wizard):
+    def __init__(self, name, house):
+        super().__init__(name) # Call parent constructor
+        self.house = house
+
+
+
+Why Inheritance? (DRY Principle)
+- Don't Repeat Yourself: Write name validation in Wizard once; reuse it 
+  in Student, Professor, etc.
+
+===============================================================================
+SECTION 8: OOP CORE CONCEPTS
+===============================================================================
+1. ENCAPSULATION: Bundling data/methods and restricting direct access (Getters).
+2. ABSTRACTION: Hiding complexity (e.g., student.charm() hides match/case logic).
+3. INHERITANCE: Creating new classes based on existing ones.
+4. POLYMORPHISM: Same interface (e.g., a print function) working with 
+   different object types (Wizard, Student, Professor).
+
+Public vs Private (By Convention):
+- self.name : Public
+- self._name : "Private" (Please don't touch directly)
+
+===============================================================================
+SECTION 9: SPECIAL METHODS (DUNDER METHODS)
+===============================================================================
+__init__ : Constructor (Object creation)
+__str__  : User-friendly string (Called by print(obj))
+__repr__ : Developer-friendly string (Debugging)
+__len__  : Returns length (Called by len(obj))
+
+===============================================================================
+SECTION 10: COMPLETE REFERENCE EXAMPLE
+===============================================================================
+class Wizard:
+    VALID_HOUSES = ["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"]
+
+    def __init__(self, name):
+        if not name: raise ValueError("Missing name")
+        self._name = name
+
+    @property
+    def name(self): return self._name
+
+    @name.setter
+    def name(self, name):
+        if not name: raise ValueError("Invalid name")
+        self._name = name
+
+    def __str__(self): return f"Wizard: {self.name}"
+
+class Student(Wizard):
+    def __init__(self, name, house, patronus=None):
+        super().__init__(name)
+        self.house = house
+        self.patronus = patronus
+
+    @property
+    def house(self): return self._house
+
+    @house.setter
+    def house(self, house):
+        if house not in Wizard.VALID_HOUSES:
+            raise ValueError(f"Invalid house: {house}")
+        self._house = house
+
+    def charm(self):
+        match self.patronus:
+            case "Stag": return "🤣"
+            case _: return "🤩"
+
+    @classmethod
+    def get(cls):
+        return cls(input("Name: "), input("House: "), input("Patronus: "))
+
+    def __str__(self): return f"{self.name} from {self.house}"
+
+def main():
+    try:
+        student = Student.get()
+        print(student)
+        print(f"Charm: {student.charm()}")
+    except ValueError as e:
+        print(f"Error: {e}")
+
+if __name__ == "__main__":
+    main()
+
+END OF DOCUMENTATION
