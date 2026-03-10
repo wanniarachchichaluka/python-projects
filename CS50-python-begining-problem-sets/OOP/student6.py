@@ -15,13 +15,16 @@ class Student:
     def name(self):
         return self._name
     
-    @house.setter
+    @name.setter
     def name(self,name):
         if not name:
             raise ValueError("no name")
         self._name=name
 
     #Getter is function in a calss that get a value
+    ##You need a place to actually store the data that is 
+    # different from the property name. If the property is house, 
+    # the storage is _house.
     @property
     def house(self):
         return self._house

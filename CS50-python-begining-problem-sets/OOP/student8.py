@@ -22,4 +22,9 @@ if __name__=="__main__":
     main()
 
 
-#@staticmethod? **learn
+##@staticmethod? **learn 
+#@staticmethod
+#    def is_legal_name(name):
+#        # I don't need 'self' or 'cls' to check if a string is valid
+#        return len(name) > 1
+
