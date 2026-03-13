@@ -1,0 +1,5 @@
+students = ["a","b","c"]
+
+ks = [{"name":student, "house": "k"} for student in students]
+
+print(ks)
