@@ -1,0 +1,12 @@
+people = [
+    {"name": "A", "house": "P"},
+    {"name": "B", "house": "Q"},
+    {"name": "C", "house": "R"}
+]
+
+def f(person):
+    return person["name"]
+
+people.sort(key=f)
+
+print(people)
