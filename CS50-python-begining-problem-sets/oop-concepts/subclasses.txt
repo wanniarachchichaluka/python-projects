@@ -1,0 +1,116 @@
+Subclasses
+What is a Subclass?
+A subclass (also called a child class) is a class that inherits from another class (the parent class or superclass). It gets all the attributes and methods from the parent class and can:
+
+Use parent's methods as-is
+
+Override (change) parent's methods
+
+Add new methods of its own
+
+Real-World Analogy
+Think of "Animal" as the parent class. A "Dog" subclass inherits from Animal - it can breathe, eat, sleep like any animal, but ALSO has unique behaviors like barking.
+
+Simple Example (continuing from our ABC)
+python
+from abc import ABC, abstractmethod
+
+# Parent class (Abstract Base Class)
+class Vehicle(ABC):
+    
+    def __init__(self, brand: str):
+        self.brand = brand
+    
+    @abstractmethod
+    def start(self):
+        pass
+    
+    def get_brand(self):
+        """Regular method that subclasses can use directly"""
+        return f"This vehicle is made by {self.brand}"
+
+# SUBCLASS 1: Car inherits from Vehicle
+class Car(Vehicle):
+    
+    def start(self):  # Implementing abstract method
+        return f"{self.brand} car: Engine starts VROOM!"
+    
+    def honk(self):   # New method unique to Car
+        return "Beep beep!"
+
+# SUBCLASS 2: Motorcycle inherits from Vehicle
+class Motorcycle(Vehicle):
+    
+    def start(self):  # Implementing abstract method differently
+        return f"{self.brand} motorcycle: Kick start VROOM!"
+    
+    def wheelie(self):  # New method unique to Motorcycle
+        return "Doing a wheelie! 🏍️"
+
+# Creating objects from subclasses
+my_car = Car("Toyota")
+my_bike = Motorcycle("Honda")
+
+# Using inherited method from parent class
+print(my_car.get_brand())        # This vehicle is made by Toyota
+print(my_bike.get_brand())       # This vehicle is made by Honda
+
+# Using implemented abstract method (polymorphism)
+print(my_car.start())            # Toyota car: Engine starts VROOM!
+print(my_bike.start())           # Honda motorcycle: Kick start VROOM!
+
+# Using subclass-specific methods
+print(my_car.honk())             # Beep beep!
+print(my_bike.wheelie())         # Doing a wheelie! 🏍️
+What Subclasses Can Do:
+python
+class Animal:
+    def __init__(self, name):
+        self.name = name
+    
+    def make_sound(self):
+        return "Some generic sound"
+    
+    def eat(self):
+        return f"{self.name} is eating"
+
+# Subclass 1
+class Dog(Animal):
+    def make_sound(self):  # Overriding parent method
+        return "Woof!"
+    
+    def fetch(self):       # Adding new method
+        return f"{self.name} is fetching the ball"
+
+# Subclass 2
+class Cat(Animal):
+    def make_sound(self):  # Overriding differently
+        return "Meow!"
+    
+    def climb(self):       # Adding different new method
+        return f"{self.name} is climbing a tree"
+
+# Subclass 3 - uses parent method as-is
+class Fish(Animal):
+    pass  # Doesn't override anything, just inherits
+
+# Testing
+dog = Dog("Buddy")
+cat = Cat("Whiskers")
+fish = Fish("Nemo")
+
+print(dog.make_sound())   # Woof! (overridden)
+print(cat.make_sound())   # Meow! (overridden)
+print(fish.make_sound())  # Some generic sound (from parent)
+print(dog.fetch())        # Buddy is fetching the ball (new method)
+print(fish.eat())         # Nemo is eating (inherited)
+Key Points about Subclasses:
+Inheritance syntax: class ChildClass(ParentClass):
+
+Gets everything from parent (attributes + methods)
+
+Can override parent methods by redefining them
+
+Can extend by adding new methods
+
+super() allows calling parent methods from subclass (we'll cover this later)

@@ -1,0 +1,47 @@
+from abc import ABC, abstractmethod
+
+# Abstract Base Class
+class Vehicle(ABC):
+    
+    @abstractmethod
+    def start(self):
+        """Every vehicle must have a start method"""
+        pass
+    
+    @abstractmethod
+    def stop(self):
+        """Every vehicle must have a stop method"""
+        pass
+
+# This will NOT work - can't create instance of abstract class
+# vehicle = Vehicle()  # ❌ TypeError!
+
+# Concrete class that implements the abstract methods
+class Car(Vehicle):
+    
+    def start(self):
+        return "Car: Turning key and engine starts VROOM!"
+    
+    def stop(self):
+        return "Car: Pressing brake pedal"
+
+# Another concrete class
+class Bicycle(Vehicle):
+    
+    def start(self):
+        return "Bicycle: Pushing pedals"
+    
+    def stop(self):
+        return "Bicycle: Squeezing brake levers"
+
+# Now we can create instances of concrete classes
+my_car = Car()
+my_bike = Bicycle()
+
+print(my_car.start())   # Car: Turning key and engine starts VROOM!
+print(my_bike.start())  # Bicycle: Pushing pedals
+
+#Key Points:
+#Cannot instantiate ABC: You can't create an object from Vehicle directly
+#Forces implementation: If you create Car without implementing start(), Python will give an error
+#Guarantees interface: Any vehicle will have start() and stop() methods

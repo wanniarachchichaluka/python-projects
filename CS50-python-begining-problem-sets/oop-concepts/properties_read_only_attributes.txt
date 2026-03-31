@@ -1,0 +1,336 @@
+Real-World Analogy
+Think of a digital thermometer - you can read the temperature (get), but you can't set it directly (the temperature depends on actual conditions). The thermometer calculates the temperature when you ask for it.
+
+Simple Example: Basic Property
+python
+class Circle:
+    def __init__(self, radius):
+        self.radius = radius
+        # _area is NOT stored - we'll calculate it when needed
+    
+    @property
+    def area(self):
+        """Read-only property - calculates area on demand"""
+        return 3.14159 * self.radius ** 2
+
+# Usage
+circle = Circle(5)
+print(f"Radius: {circle.radius}")      # 5 - regular attribute
+print(f"Area: {circle.area}")          # 78.53975 - accessed like attribute, no parentheses!
+
+# Trying to set area will fail
+try:
+    circle.area = 100  # This will raise an error
+except AttributeError as e:
+    print(f"Error: {e} - Cannot set read-only property")
+Why Use Properties?
+python
+class Person:
+    def __init__(self, first_name, last_name, birth_year):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.birth_year = birth_year
+        self._age = None  # Private attribute (convention: _ means "don't touch")
+    
+    # READ-ONLY PROPERTY 1: Computed from other attributes
+    @property
+    def full_name(self):
+        """Combines first and last name"""
+        return f"{self.first_name} {self.last_name}"
+    
+    # READ-ONLY PROPERTY 2: Calculated value
+    @property
+    def age(self):
+        """Calculates age based on current year"""
+        current_year = 2026  # In real code, you'd get actual current year
+        return current_year - self.birth_year
+    
+    # READ-ONLY PROPERTY 3: Returns formatted data
+    @property
+    def initials(self):
+        """Returns person's initials"""
+        return f"{self.first_name[0]}.{self.last_name[0]}."
+
+# Demonstration
+person = Person("John", "Doe", 1990)
+
+print("=== READ-ONLY PROPERTIES ===")
+print(f"First name: {person.first_name}")     # Regular attribute
+print(f"Full name: {person.full_name}")       # Property - no parentheses!
+print(f"Age: {person.age}")                   # Property - calculated
+print(f"Initials: {person.initials}")         # Property - formatted
+
+# Cannot modify properties
+try:
+    person.full_name = "Jane Smith"  # This will fail
+except AttributeError as e:
+    print(f"\nCannot modify property: {e}")
+Property with Private Attribute (Encapsulation)
+python
+class BankAccount:
+    def __init__(self, account_number, initial_balance):
+        self.account_number = account_number
+        self._balance = initial_balance  # Private attribute (by convention)
+        self._transaction_count = 0
+    
+    # READ-ONLY PROPERTY: Expose balance but prevent modification
+    @property
+    def balance(self):
+        """Read-only balance - can see but not directly set"""
+        return self._balance
+    
+    # READ-ONLY PROPERTY: Computed from private data
+    @property
+    def transaction_count(self):
+        """How many transactions have occurred"""
+        return self._transaction_count
+    
+    # READ-ONLY PROPERTY: Status based on balance
+    @property
+    def is_overdrawn(self):
+        """Returns True if balance is negative"""
+        return self._balance < 0
+    
+    # READ-ONLY PROPERTY: Formatted for display
+    @property
+    def formatted_balance(self):
+        """Returns balance as currency string"""
+        return f"${self._balance:,.2f}"
+    
+    # Methods that modify the private data
+    def deposit(self, amount):
+        if amount > 0:
+            self._balance += amount
+            self._transaction_count += 1
+            return True
+        return False
+    
+    def withdraw(self, amount):
+        if 0 < amount <= self._balance:
+            self._balance -= amount
+            self._transaction_count += 1
+            return True
+        return False
+
+# Demonstration
+account = BankAccount("123456", 1000)
+
+print("=== BANK ACCOUNT WITH READ-ONLY PROPERTIES ===")
+print(f"Account: {account.account_number}")
+print(f"Balance: {account.balance}")                    # 1000 - property
+print(f"Formatted: {account.formatted_balance}")        # $1,000.00 - property
+print(f"Overdrawn? {account.is_overdrawn}")             # False - property
+print(f"Transactions: {account.transaction_count}")     # 0 - property
+
+# Can't directly modify balance
+try:
+    account.balance = 5000  # This will fail
+except AttributeError as e:
+    print(f"\nCannot set balance directly: {e}")
+
+# Must use methods to change
+account.deposit(500)
+account.withdraw(200)
+print(f"\nAfter transactions:")
+print(f"New balance: {account.balance}")                # 1300
+print(f"Transactions: {account.transaction_count}")     # 2
+Property with Getter (Explicit Read-Only)
+python
+class Temperature:
+    def __init__(self, celsius):
+        self._celsius = celsius
+    
+    # Standard property (getter only = read-only)
+    @property
+    def celsius(self):
+        """Read-only property"""
+        return self._celsius
+    
+    # Computed property
+    @property
+    def fahrenheit(self):
+        """Convert to Fahrenheit - read-only"""
+        return (self._celsius * 9/5) + 32
+    
+    @property
+    def kelvin(self):
+        """Convert to Kelvin - read-only"""
+        return self._celsius + 273.15
+    
+    @property
+    def is_freezing(self):
+        """Check if temperature is below freezing"""
+        return self._celsius <= 0
+    
+    @property
+    def is_boiling(self):
+        """Check if temperature is at boiling point"""
+        return self._celsius >= 100
+
+# Demonstration
+temp = Temperature(25)
+
+print("=== TEMPERATURE CONVERTER ===")
+print(f"Celsius: {temp.celsius}°C")
+print(f"Fahrenheit: {temp.fahrenheit}°F")
+print(f"Kelvin: {temp.kelvin}K")
+print(f"Freezing? {temp.is_freezing}")
+print(f"Boiling? {temp.is_boiling}")
+
+# All properties are read-only
+try:
+    temp.fahrenheit = 100  # This will fail
+except AttributeError as e:
+    print(f"\nCannot set property: {e}")
+Practical Example: Student Grades
+python
+class Student:
+    def __init__(self, name, scores=None):
+        self.name = name
+        self._scores = scores if scores is not None else []
+    
+    # READ-ONLY PROPERTIES
+    
+    @property
+    def average(self):
+        """Calculate average score"""
+        if not self._scores:
+            return 0
+        return sum(self._scores) / len(self._scores)
+    
+    @property
+    def highest_score(self):
+        """Find highest score"""
+        if not self._scores:
+            return 0
+        return max(self._scores)
+    
+    @property
+    def lowest_score(self):
+        """Find lowest score"""
+        if not self._scores:
+            return 0
+        return min(self._scores)
+    
+    @property
+    def grade(self):
+        """Calculate letter grade based on average"""
+        avg = self.average
+        if avg >= 90:
+            return 'A'
+        elif avg >= 80:
+            return 'B'
+        elif avg >= 70:
+            return 'C'
+        elif avg >= 60:
+            return 'D'
+        else:
+            return 'F'
+    
+    @property
+    def total_scores(self):
+        """Number of scores recorded"""
+        return len(self._scores)
+    
+    @property
+    def status(self):
+        """Student status based on performance"""
+        if self.average >= 70:
+            return "Passing"
+        else:
+            return "Needs Improvement"
+    
+    # Method to add scores (only way to modify)
+    def add_score(self, score):
+        if 0 <= score <= 100:
+            self._scores.append(score)
+            return True
+        return False
+
+# Demonstration
+student = Student("Alice")
+
+print("=== STUDENT GRADE SYSTEM ===")
+print(f"Student: {student.name}")
+print(f"Average: {student.average}")
+print(f"Grade: {student.grade}")
+print(f"Status: {student.status}")
+print(f"Total scores: {student.total_scores}")
+
+# Add some scores
+student.add_score(85)
+student.add_score(92)
+student.add_score(78)
+
+print("\n=== AFTER ADDING SCORES ===")
+print(f"Scores added: 85, 92, 78")
+print(f"Average: {student.average:.1f}")
+print(f"Highest: {student.highest_score}")
+print(f"Lowest: {student.lowest_score}")
+print(f"Grade: {student.grade}")
+print(f"Status: {student.status}")
+print(f"Total scores: {student.total_scores}")
+
+# Cannot modify properties directly
+try:
+    student.average = 95  # This will fail
+except AttributeError as e:
+    print(f"\nCannot modify property: {e}")
+Property vs Regular Attribute vs Method
+python
+class Example:
+    def __init__(self, value):
+        self.regular_attr = value  # Regular attribute - can get/set
+        self._private = value
+    
+    # Property - accessed like attribute, computed on demand
+    @property
+    def property_example(self):
+        return self._private * 2
+    
+    # Method - needs parentheses
+    def method_example(self):
+        return self._private * 2
+
+obj = Example(10)
+
+print("=== COMPARISON ===")
+print(f"Regular attribute: {obj.regular_attr}")  # Just a value
+print(f"Property: {obj.property_example}")       # No parentheses, computed
+print(f"Method: {obj.method_example()}")         # Needs parentheses
+
+# Regular attribute can be modified
+obj.regular_attr = 20
+print(f"\nModified regular: {obj.regular_attr}")
+
+# Property cannot be modified (read-only)
+try:
+    obj.property_example = 30
+except AttributeError as e:
+    print(f"Can't modify property: {e}")
+Key Points About Properties:
+Feature	Regular Attribute	Read-Only Property	Method
+Syntax	obj.attr	obj.prop	obj.method()
+Can modify?	Yes	No	N/A
+Can compute?	No	Yes	Yes
+Use parentheses?	No	No	Yes
+Best for	Simple stored data	Calculated/validated data	Actions that modify
+When to Use Read-Only Properties:
+Calculated values (area, average, full name)
+
+Formatted data (currency, date strings)
+
+Status indicators (is_overdrawn, is_valid)
+
+Protect sensitive data (balance without allowing direct modification)
+
+Computed from other attributes (age from birth year)
+
+Benefits:
+Clean syntax - No parentheses needed
+
+Encapsulation - Hide implementation details
+
+Backward compatibility - Can change from attribute to property without breaking code
+
+Computed on demand - Values recalculated when needed
